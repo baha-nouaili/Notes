@@ -11,16 +11,16 @@ export class UserRepository {
 
   async find(
     filterQuery: FilterQuery<User>,
-    projection: ProjectionType<User>,
+    projection?: ProjectionType<User>,
   ): Promise<User[]> {
-    return this.userModel.find(filterQuery, projection);
+    return this.userModel.find(filterQuery, projection).exec();
   }
 
   async findOne(
     filterQuery: FilterQuery<User>,
-    projection: ProjectionType<User>,
+    projection?: ProjectionType<User>,
   ): Promise<User> {
-    return this.userModel.findOne(filterQuery, projection);
+    return this.userModel.findOne(filterQuery, projection).exec();
   }
 
   async create(user: User): Promise<User> {
@@ -30,15 +30,18 @@ export class UserRepository {
   async findOneAndUpdate(
     filterQuery: FilterQuery<User>,
     updateQuery: Partial<User>,
+    projection?: ProjectionType<User>,
   ): Promise<User> {
-    return this.userModel.findOneAndUpdate(filterQuery, updateQuery);
+    return this.userModel
+      .findOneAndUpdate(filterQuery, updateQuery, { projection, new: true })
+      .exec();
   }
 
   async deleteOne(filterQuery: FilterQuery<User>): Promise<DeleteResult> {
-    return this.userModel.deleteOne(filterQuery);
+    return this.userModel.deleteOne(filterQuery).exec();
   }
 
   async deleteMany(filterQuery: FilterQuery<User>): Promise<DeleteResult> {
-    return this.userModel.deleteMany(filterQuery);
+    return this.userModel.deleteMany(filterQuery).exec();
   }
 }
