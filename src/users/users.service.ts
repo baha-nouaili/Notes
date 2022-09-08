@@ -2,12 +2,17 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { UserRepository } from './data/users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
+import { JWT } from '../shared/Auth/jwt.helper';
+import { TokenResponse } from './types/token.response';
 
 @Injectable()
 export class UsersService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private jwtService: JWT,
+  ) {}
 
-  async register(userDto: CreateUserDto): Promise<string> {
+  async register(userDto: CreateUserDto): Promise<TokenResponse> {
     const { email, password } = userDto;
     const doesUserExist = await this.userRepository.findOne({ email });
     if (doesUserExist)
@@ -15,11 +20,16 @@ export class UsersService {
         'User already exist try to login.',
         HttpStatus.BAD_REQUEST,
       );
-    await this.userRepository.create({ email, password });
-    return 'Successfully registered!';
+    const user = await this.userRepository.create({ email, password });
+    const accessToken = await this.jwtService.signAccessToken(user._id);
+    const refreshToken = await this.jwtService.signRefreshToken(user._id);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
-  async login(userDto: CreateUserDto): Promise<string> {
+  async login(userDto: CreateUserDto): Promise<TokenResponse> {
     const { email, password } = userDto;
     const user = await this.userRepository.findOne({ email });
     if (!user || !(await user.isValidPassword(password)))
@@ -27,6 +37,11 @@ export class UsersService {
         'Invalid email & password.',
         HttpStatus.NOT_FOUND,
       );
-    return 'You are logged in.';
+    const accessToken = await this.jwtService.signAccessToken(user._id);
+    const refreshToken = await this.jwtService.signRefreshToken(user._id);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
