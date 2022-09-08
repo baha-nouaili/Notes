@@ -1,3 +1,4 @@
+import { RequestService } from './../shared/Auth/request.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 import { UserRepository } from './data/users.repository';
@@ -10,6 +11,7 @@ export class UsersService {
   constructor(
     private userRepository: UserRepository,
     private jwtService: JWT,
+    private requestService: RequestService,
   ) {}
 
   async register(userDto: CreateUserDto): Promise<TokenResponse> {
@@ -43,5 +45,15 @@ export class UsersService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async protected() {
+    try {
+      const user = this.requestService.getUserId();
+      console.log(user);
+      return 'hello ';
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 }

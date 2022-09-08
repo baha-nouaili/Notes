@@ -17,4 +17,9 @@ export class UsersController {
   login(@Body() createUserDto: CreateUserDto): Promise<TokenResponse> {
     return this.usersService.login(createUserDto);
   }
+
+  @Get('protected')
+  protectedRoute() {
+    return this.usersService.protected();
+  }
 }

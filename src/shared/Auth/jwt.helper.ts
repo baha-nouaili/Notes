@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
-import { Jwt, sign, verify, JwtPayload } from 'jsonwebtoken';
+import { sign, verify, JwtPayload } from 'jsonwebtoken';
 import { ObjectId } from 'mongoose';
 
 @Injectable()
@@ -38,12 +37,20 @@ export class JWT {
     });
   }
 
-  verifyAccessToken(token: string): Jwt | JwtPayload | string {
+  verifyAccessToken(token: string): Promise<JwtPayload> {
     const accessTokenSecret = this.configService.get('ACCESS_TOKEN_SECRET');
-    return new Promise((resolve, reject) => {
-      verify(token, accessTokenSecret, (err, payload) => {
-        if (err) reject(err);
-        return resolve(payload);
+    return new Promise((resolve, _) => {
+      verify(token, accessTokenSecret, (err: any, payload: JwtPayload) => {
+        if (err) {
+          if (err.name === 'JsonWebTokenError') {
+            throw new UnauthorizedException();
+          } else {
+            throw new UnauthorizedException(
+              'Your session expired try to Log In again.',
+            );
+          }
+        }
+        resolve(payload);
       });
     });
   }
