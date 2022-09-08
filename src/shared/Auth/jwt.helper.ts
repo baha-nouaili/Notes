@@ -7,7 +7,7 @@ import { ObjectId } from 'mongoose';
 export class JWT {
   constructor(private configService: ConfigService) {}
 
-  signAccessToken(userId: ObjectId): Promise<string> {
+  signAccessToken(userId: ObjectId | string): Promise<string> {
     return new Promise((resolve, reject) => {
       const payload = {
         sub: userId,
@@ -22,7 +22,7 @@ export class JWT {
     });
   }
 
-  signRefreshToken(userId: ObjectId): Promise<string> {
+  signRefreshToken(userId: ObjectId | string): Promise<string> {
     return new Promise((resolve, reject) => {
       const payload = {
         sub: userId,
@@ -45,12 +45,21 @@ export class JWT {
           if (err.name === 'JsonWebTokenError') {
             throw new UnauthorizedException();
           } else {
-            throw new UnauthorizedException(
-              'Your session expired try to Log In again.',
-            );
+            throw new UnauthorizedException(err.message);
           }
         }
         resolve(payload);
+      });
+    });
+  }
+
+  verifyRefreshToken(refreshToken: string): Promise<string> {
+    const refreshTokenSecret = this.configService.get('REFRESH_TOKEN_SECRET');
+    return new Promise((resolve, _) => {
+      verify(refreshToken, refreshTokenSecret, (err, payload: JwtPayload) => {
+        if (err) throw new UnauthorizedException();
+        const { sub } = payload;
+        resolve(sub);
       });
     });
   }

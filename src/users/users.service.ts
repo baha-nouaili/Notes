@@ -1,5 +1,11 @@
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RequestService } from './../shared/Auth/request.service';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { UserRepository } from './data/users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,8 +20,7 @@ export class UsersService {
     private requestService: RequestService,
   ) {}
 
-  async register(userDto: CreateUserDto): Promise<TokenResponse> {
-    const { email, password } = userDto;
+  async register({ email, password }: CreateUserDto): Promise<TokenResponse> {
     const doesUserExist = await this.userRepository.findOne({ email });
     if (doesUserExist)
       throw new HttpException(
@@ -31,8 +36,7 @@ export class UsersService {
     };
   }
 
-  async login(userDto: CreateUserDto): Promise<TokenResponse> {
-    const { email, password } = userDto;
+  async login({ email, password }: CreateUserDto): Promise<TokenResponse> {
     const user = await this.userRepository.findOne({ email });
     if (!user || !(await user.isValidPassword(password)))
       throw new HttpException(
@@ -41,6 +45,18 @@ export class UsersService {
       );
     const accessToken = await this.jwtService.signAccessToken(user._id);
     const refreshToken = await this.jwtService.signRefreshToken(user._id);
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async refreshToken(token: RefreshTokenDto): Promise<TokenResponse> {
+    const userId = await this.jwtService.verifyRefreshToken(token.refreshToken);
+    const user = await this.userRepository.findOne({ _id: userId });
+    if (!user) throw new UnauthorizedException();
+    const accessToken = await this.jwtService.signAccessToken(userId);
+    const refreshToken = await this.jwtService.signRefreshToken(userId);
     return {
       accessToken,
       refreshToken,
