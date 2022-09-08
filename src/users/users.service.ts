@@ -1,5 +1,3 @@
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { RequestService } from './../shared/Auth/request.service';
 import {
   HttpException,
   HttpStatus,
@@ -7,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { UserRepository } from './data/users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JWT } from '../shared/Auth/jwt.helper';
@@ -17,7 +16,6 @@ export class UsersService {
   constructor(
     private userRepository: UserRepository,
     private jwtService: JWT,
-    private requestService: RequestService,
   ) {}
 
   async register({ email, password }: CreateUserDto): Promise<TokenResponse> {
@@ -61,15 +59,5 @@ export class UsersService {
       accessToken,
       refreshToken,
     };
-  }
-
-  async protected() {
-    try {
-      const user = this.requestService.getUserId();
-      console.log(user);
-      return 'hello ';
-    } catch (error) {
-      console.log('error', error);
-    }
   }
 }
