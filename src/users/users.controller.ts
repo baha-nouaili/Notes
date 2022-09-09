@@ -7,7 +7,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
-@Controller('user')
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

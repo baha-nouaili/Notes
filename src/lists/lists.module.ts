@@ -17,6 +17,6 @@ import { RequestService } from '../shared/Auth/request.service';
 })
 export class ListsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthenticationMiddleware).forRoutes('list/*');
+    consumer.apply(AuthenticationMiddleware).forRoutes('lists/*');
   }
 }

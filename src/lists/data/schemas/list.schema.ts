@@ -7,7 +7,7 @@ export type ListDocument = List & Document;
 
 @Schema()
 export class List {
-  @Prop({ required: true, type: mongoose.SchemaTypes.ObjectId, ref: 'User' })
+  @Prop({ type: mongoose.SchemaTypes.ObjectId, ref: 'User' })
   author: string;
 
   @Prop([{ type: Contributor }])
