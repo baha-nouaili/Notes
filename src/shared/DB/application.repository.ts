@@ -7,18 +7,26 @@ export abstract class ApplicationRepository<T extends Document> {
   async find(
     filterQuery: FilterQuery<T>,
     projection?: ProjectionType<T>,
+    populate?: string,
   ): Promise<T[] | []> {
-    return this.domainModel.find(filterQuery, projection).exec();
+    return this.domainModel
+      .find(filterQuery, projection)
+      .populate(populate)
+      .exec();
   }
 
   async findOne(
     filterQuery: FilterQuery<T>,
     projection?: ProjectionType<T>,
-  ): Promise<T | null> {
-    return this.domainModel.findOne(filterQuery, projection).exec();
+    populate?: string,
+  ): Promise<T | any> {
+    return this.domainModel
+      .findOne(filterQuery, projection)
+      .populate(populate)
+      .exec();
   }
 
-  async create(data: any): Promise<T> {
+  async create(data: Partial<T>): Promise<T> {
     return this.domainModel.create(data);
   }
 

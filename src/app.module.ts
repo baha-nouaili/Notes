@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { UsersModule } from './users/users.module';
 import { MongooseConfigService } from './shared/DB/mongoose.config';
+import { ListsModule } from './lists/lists.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { MongooseConfigService } from './shared/DB/mongoose.config';
     MongooseModule.forRootAsync({
       useClass: MongooseConfigService,
     }),
+    ListsModule,
   ],
   controllers: [],
   providers: [],
