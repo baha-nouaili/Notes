@@ -3,7 +3,7 @@ import mongoose, { Types } from 'mongoose';
 import { Permission } from '../../types/permissions.enum';
 
 @Schema()
-export class Contributors {
+export class Contributor {
   @Prop({ required: false })
   _id?: false;
 

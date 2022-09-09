@@ -2,7 +2,7 @@ import { Schema, Prop } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
 @Schema()
-export class Notes {
+export class Note {
   @Prop({ required: true })
   title: string;
 
