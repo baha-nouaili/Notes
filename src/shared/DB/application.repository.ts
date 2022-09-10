@@ -1,4 +1,11 @@
-import { Document, Model, FilterQuery, ProjectionType } from 'mongoose';
+import {
+  Document,
+  Model,
+  FilterQuery,
+  ProjectionType,
+  UpdateQuery,
+  AggregateOptions,
+} from 'mongoose';
 import { DeleteResult } from 'mongodb';
 
 export abstract class ApplicationRepository<T extends Document> {
@@ -32,7 +39,7 @@ export abstract class ApplicationRepository<T extends Document> {
 
   async findOneAndUpdate(
     filterQuery: FilterQuery<T>,
-    updateQuery: Partial<T>,
+    updateQuery: UpdateQuery<T>,
     projection?: ProjectionType<T>,
   ): Promise<T | null> {
     return this.domainModel

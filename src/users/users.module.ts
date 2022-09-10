@@ -14,5 +14,6 @@ import { RequestService } from '../shared/Auth/request.service';
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository, JWT, RequestService],
+  exports: [UserRepository],
 })
 export class UsersModule {}
