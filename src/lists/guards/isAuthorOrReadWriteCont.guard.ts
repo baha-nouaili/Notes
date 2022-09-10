@@ -1,20 +1,24 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
 
 import { RequestService } from '../../shared/Auth/request.service';
 import { ListParam } from './../dto/listIdParam.dto';
 import { AuthorizationService } from '../authorization.service';
 @Injectable()
-export class isAuthorGuard implements CanActivate {
+export class isAuthorOrReadAndWriteCont implements CanActivate {
   constructor(
     private requestService: RequestService,
     private authorizationService: AuthorizationService,
   ) {}
-  async canActivate(context?: ExecutionContext): Promise<boolean> {
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requestParam = context.switchToHttp().getRequest<Request>()
       .params as ListParam;
     const listId = requestParam.listId;
     const userId = this.requestService.getUserId();
-    return await this.authorizationService.checkIsAuthor(listId, userId);
+    return await this.authorizationService.checkIsAuthorOrReadWriteCont(
+      listId,
+      userId,
+    );
   }
 }

@@ -1,14 +1,23 @@
+import { NoteRepository } from './data/note.repository';
+import { CreateNoteDto } from './dto/create-note.dto';
 import { UserRepository } from './../users/data/users.repository';
 import { InviteContributorDto } from './dto/invite-contributor.dto';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 import { List } from './data/schemas/list.schema';
 import { ListRepository } from './data/list.repository';
+import { Note } from './data/schemas/note.schema';
 @Injectable()
 export class ListsService {
   constructor(
     private listRepository: ListRepository,
     private userRepository: UserRepository,
+    private noteRepository: NoteRepository,
   ) {}
 
   async createNoteList(author: string): Promise<List> {
@@ -57,5 +66,28 @@ export class ListsService {
       },
     );
     return updatedList;
+  }
+
+  async createNote(
+    listId: string,
+    author: string,
+    { content, title }: CreateNoteDto,
+  ): Promise<Note> {
+    const newNote = await this.noteRepository.create({
+      content,
+      title,
+      list_id: listId,
+      note_author: author,
+    });
+    const updatedList = await this.listRepository.findOneAndUpdate(
+      { _id: listId },
+      {
+        $push: {
+          notes: newNote._id,
+        },
+      },
+    );
+    if (!newNote && !updatedList) throw new InternalServerErrorException();
+    return newNote;
   }
 }

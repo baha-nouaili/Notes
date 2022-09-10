@@ -9,10 +9,13 @@ import { JWT } from '../shared/Auth/jwt.helper';
 import { RequestService } from '../shared/Auth/request.service';
 import { UsersModule } from '../users/users.module';
 import { AuthorizationService } from './authorization.service';
+import { Note, NoteSchema } from './data/schemas/note.schema';
+import { NoteRepository } from './data/note.repository';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: List.name, schema: ListSchema }]),
+    MongooseModule.forFeature([{ name: Note.name, schema: NoteSchema }]),
     UsersModule,
   ],
   controllers: [ListsController],
@@ -22,6 +25,7 @@ import { AuthorizationService } from './authorization.service';
     JWT,
     RequestService,
     AuthorizationService,
+    NoteRepository,
   ],
 })
 export class ListsModule implements NestModule {

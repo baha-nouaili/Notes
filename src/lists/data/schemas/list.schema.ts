@@ -7,14 +7,17 @@ export type ListDocument = List & Document;
 
 @Schema()
 export class List {
-  @Prop({ type: mongoose.SchemaTypes.ObjectId, ref: 'User' })
+  @Prop({ type: mongoose.SchemaTypes.ObjectId, ref: 'User', required: true })
   author: string;
 
   @Prop([{ type: Contributor }])
   contributors: Contributor;
 
-  @Prop([{ type: Note }])
-  notes: Note;
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }],
+    unique: true,
+  })
+  notes: Note[];
 }
 
 export const ListSchema = SchemaFactory.createForClass(List);

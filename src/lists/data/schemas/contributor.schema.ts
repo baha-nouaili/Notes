@@ -10,6 +10,11 @@ export class Contributor {
   @Prop({ type: String, enum: Permission, required: true })
   permission: Permission;
 
-  @Prop({ required: true, type: mongoose.SchemaTypes.ObjectId, ref: 'User' })
+  @Prop({
+    required: true,
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'User',
+    unique: true,
+  })
   contributor_id: string | Types.ObjectId;
 }
