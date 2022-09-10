@@ -9,6 +9,7 @@ import {
   Post,
   UseGuards,
   Put,
+  Get,
 } from '@nestjs/common';
 import { ListsService } from './lists.service';
 import { List } from './data/schemas/list.schema';
@@ -19,6 +20,9 @@ import { isAuthorOrReadAndWriteCont } from './guards/isAuthorOrReadWriteCont.gua
 import { Note } from './data/schemas/note.schema';
 import { NoteParamDto } from './dto/noteidParam.dto';
 import { NoteUpdateValidate } from './pipes/update-note.pipe';
+import { isAuthorOrContributor } from './guards/isAuthorOrContributor.guard';
+import { UserIdParam } from './dto/userIdParam.dto';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
 
 @Controller('lists')
 export class ListsController {
@@ -63,13 +67,45 @@ export class ListsController {
     return this.listsService.deleteNote(listId, userId, noteId);
   }
 
-  // @UseGuards(isAuthorOrReadAndWriteCont)
+  @UseGuards(isAuthorOrReadAndWriteCont)
   @Put(':listId/:noteId')
   updateNote(
-    // @Param() { listId }: ListParamDto,
-    // @Param() { noteId }: NoteParamDto,
+    @Param() { listId }: ListParamDto,
+    @Param() { noteId }: NoteParamDto,
     @Body(new NoteUpdateValidate()) updateNoteDto: UpdateNoteDto,
   ) {
-    console.log('updateNoteDto');
+    const author = this.requestService.getUserId();
+    return this.listsService.updateNote(noteId, listId, author, updateNoteDto);
+  }
+
+  @UseGuards(isAuthorOrContributor)
+  @Get(':listId/notes')
+  getNotes(@Param() { listId }: ListParamDto): Promise<any[] | []> {
+    return this.listsService.getNotes(listId);
+  }
+
+  @UseGuards(isAuthorGuard)
+  @Put(':listId/update-permission/:userId')
+  updatePermission(
+    @Param() { listId }: ListParamDto,
+    @Param() { userId }: UserIdParam,
+    @Body() updatePermissionDto: UpdatePermissionDto,
+  ) {
+    const author = this.requestService.getUserId();
+    return this.listsService.updatePermission(
+      listId,
+      author,
+      userId,
+      updatePermissionDto,
+    );
+  }
+
+  @UseGuards(isAuthorGuard)
+  @Delete(':listId/delete/:userId')
+  deleteContributor(
+    @Param() { listId }: ListParamDto,
+    @Param() { userId }: UserIdParam,
+  ) {
+    return this.listsService.deleteContributor(listId, userId);
   }
 }

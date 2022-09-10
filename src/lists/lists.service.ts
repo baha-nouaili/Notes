@@ -1,3 +1,4 @@
+import { UpdateNoteDto } from './dto/update-note.dto';
 import { NoteRepository } from './data/note.repository';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UserRepository } from './../users/data/users.repository';
@@ -13,6 +14,7 @@ import {
 import { List } from './data/schemas/list.schema';
 import { ListRepository } from './data/list.repository';
 import { Note } from './data/schemas/note.schema';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
 @Injectable()
 export class ListsService {
   constructor(
@@ -104,6 +106,82 @@ export class ListsService {
     });
     if (acknowledged && deletedCount === 0) throw new UnauthorizedException();
     if (!acknowledged) throw new InternalServerErrorException();
+    await this.listRepository.findOneAndUpdate(
+      { _id: listId, author: userId },
+      {
+        $pull: {
+          notes: {
+            _id: noteId,
+          },
+        },
+      },
+    );
     return 'Note deleted';
+  }
+
+  async updateNote(
+    _id: string,
+    list_id: string,
+    note_author: string,
+    updateNoteDto: UpdateNoteDto,
+  ): Promise<Note> {
+    const updatedNote = await this.noteRepository.updateOne(
+      {
+        _id,
+        list_id,
+        note_author,
+      },
+      {
+        $set: {
+          updateNoteDto,
+        },
+      },
+    );
+    if (!updatedNote) throw new UnauthorizedException();
+    return updatedNote;
+  }
+
+  async getNotes(listId: string): Promise<any[] | []> {
+    const notes = await this.listRepository.find(
+      { _id: listId },
+      { notes: 1 },
+      'notes',
+    );
+    if (!notes) throw new InternalServerErrorException();
+    return notes;
+  }
+
+  async updatePermission(
+    listId: string,
+    author: string,
+    userId: string,
+    { permission }: UpdatePermissionDto,
+  ) {
+    const updatedList = await this.listRepository.updateOne(
+      {
+        _id: listId,
+        author,
+        'contributors.contributor_id': userId,
+      },
+      {
+        $set: {
+          'contributors.$.permission': permission,
+        },
+      },
+    );
+    console.log(updatedList);
+    return updatedList;
+  }
+
+  async deleteContributor(listId: string, userId: string) {
+    const updatedList = await this.listRepository.updateOne(
+      { _id: listId, 'contributors.contributor_id': userId },
+      {
+        $pull: {
+          'contributors.$.contributor_id': userId,
+        },
+      },
+    );
+    return updatedList;
   }
 }

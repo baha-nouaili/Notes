@@ -10,8 +10,4 @@ export class ListRepository extends ApplicationRepository<ListDocument> {
   constructor(@InjectModel(List.name) listModel: Model<ListDocument>) {
     super(listModel);
   }
-
-  async aggregate(pipe: any[]) {
-    return await this.domainModel.aggregate(pipe).exec();
-  }
 }

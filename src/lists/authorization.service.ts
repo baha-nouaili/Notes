@@ -41,4 +41,16 @@ export class AuthorizationService {
       throw new UnauthorizedException('Not authorized to write to this list.');
     return true;
   }
+
+  async checkIsAuthorOrContibutor(
+    listId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const isAuthorOrContributor = await this.listRepository.findOne({
+      _id: listId,
+      'contributors. contributor_id': userId,
+    });
+    if (!isAuthorOrContributor) throw new UnauthorizedException();
+    return true;
+  }
 }

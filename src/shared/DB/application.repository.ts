@@ -47,6 +47,13 @@ export abstract class ApplicationRepository<T extends Document> {
       .exec();
   }
 
+  async updateOne(
+    filterQuery: FilterQuery<T>,
+    updateQuery: UpdateQuery<T>,
+  ): Promise<any> {
+    return this.domainModel.updateOne(filterQuery, updateQuery, { new: true });
+  }
+
   async deleteOne(filterQuery: FilterQuery<T>): Promise<DeleteResult> {
     return this.domainModel.deleteOne(filterQuery).exec();
   }
