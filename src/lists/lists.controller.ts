@@ -1,3 +1,4 @@
+import { UpdateNoteDto } from './dto/update-note.dto';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { isAuthorGuard } from './guards/isAuthor.guard';
 import {
@@ -7,6 +8,7 @@ import {
   Param,
   Post,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { ListsService } from './lists.service';
 import { List } from './data/schemas/list.schema';
@@ -16,6 +18,7 @@ import { RequestService } from '../shared/Auth/request.service';
 import { isAuthorOrReadAndWriteCont } from './guards/isAuthorOrReadWriteCont.guard';
 import { Note } from './data/schemas/note.schema';
 import { NoteParamDto } from './dto/noteidParam.dto';
+import { NoteUpdateValidate } from './pipes/update-note.pipe';
 
 @Controller('lists')
 export class ListsController {
@@ -58,5 +61,15 @@ export class ListsController {
   ): Promise<string> {
     const userId = this.requestService.getUserId();
     return this.listsService.deleteNote(listId, userId, noteId);
+  }
+
+  // @UseGuards(isAuthorOrReadAndWriteCont)
+  @Put(':listId/:noteId')
+  updateNote(
+    // @Param() { listId }: ListParamDto,
+    // @Param() { noteId }: NoteParamDto,
+    @Body(new NoteUpdateValidate()) updateNoteDto: UpdateNoteDto,
+  ) {
+    console.log('updateNoteDto');
   }
 }
