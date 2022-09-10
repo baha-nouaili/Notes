@@ -1,10 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { ListRepository } from './data/list.repository';
+import { NoteRepository } from './data/note.repository';
 import { Permission } from './types/permissions.enum';
 @Injectable()
 export class AuthorizationService {
-  constructor(private listRepository: ListRepository) {}
+  constructor(
+    private listRepository: ListRepository,
+    private noteRepository: NoteRepository,
+  ) {}
 
   async checkIsAuthor(listId: string, userId: string): Promise<boolean> {
     const isAuthor = await this.listRepository.findOne({

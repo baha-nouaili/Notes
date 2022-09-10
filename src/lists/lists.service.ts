@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 import { List } from './data/schemas/list.schema';
@@ -89,5 +90,20 @@ export class ListsService {
     );
     if (!newNote && !updatedList) throw new InternalServerErrorException();
     return newNote;
+  }
+
+  async deleteNote(
+    listId: string,
+    userId: string,
+    noteId: string,
+  ): Promise<string> {
+    const { acknowledged, deletedCount } = await this.noteRepository.deleteOne({
+      _id: noteId,
+      list_id: listId,
+      note_author: userId,
+    });
+    if (acknowledged && deletedCount === 0) throw new UnauthorizedException();
+    if (!acknowledged) throw new InternalServerErrorException();
+    return 'Note deleted';
   }
 }

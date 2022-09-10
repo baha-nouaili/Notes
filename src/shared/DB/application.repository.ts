@@ -54,4 +54,8 @@ export abstract class ApplicationRepository<T extends Document> {
   async deleteMany(filterQuery: FilterQuery<T>): Promise<DeleteResult> {
     return this.domainModel.deleteMany(filterQuery).exec();
   }
+
+  async findOneAndDelete(filterQuery: FilterQuery<T>) {
+    return this.domainModel.findOneAndDelete(filterQuery);
+  }
 }
