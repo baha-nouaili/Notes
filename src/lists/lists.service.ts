@@ -99,20 +99,17 @@ export class ListsService {
     userId: string,
     noteId: string,
   ): Promise<string> {
-    const { acknowledged, deletedCount } = await this.noteRepository.deleteOne({
+    const isDeleted = await this.noteRepository.findOneAndDelete({
       _id: noteId,
       list_id: listId,
       note_author: userId,
     });
-    if (acknowledged && deletedCount === 0) throw new UnauthorizedException();
-    if (!acknowledged) throw new InternalServerErrorException();
+    if (!isDeleted) throw new UnauthorizedException();
     await this.listRepository.findOneAndUpdate(
       { _id: listId, author: userId },
       {
         $pull: {
-          notes: {
-            _id: noteId,
-          },
+          notes: noteId,
         },
       },
     );
@@ -125,7 +122,7 @@ export class ListsService {
     note_author: string,
     updateNoteDto: UpdateNoteDto,
   ): Promise<Note> {
-    const updatedNote = await this.noteRepository.updateOne(
+    const updatedNote = await this.noteRepository.findOneAndUpdate(
       {
         _id,
         list_id,
@@ -133,10 +130,11 @@ export class ListsService {
       },
       {
         $set: {
-          updateNoteDto,
+          ...updateNoteDto,
         },
       },
     );
+    console.log(updatedNote);
     if (!updatedNote) throw new UnauthorizedException();
     return updatedNote;
   }
@@ -157,7 +155,7 @@ export class ListsService {
     userId: string,
     { permission }: UpdatePermissionDto,
   ) {
-    const updatedList = await this.listRepository.updateOne(
+    const updatedList = await this.listRepository.findOneAndUpdate(
       {
         _id: listId,
         author,
@@ -169,19 +167,26 @@ export class ListsService {
         },
       },
     );
-    console.log(updatedList);
     return updatedList;
   }
 
   async deleteContributor(listId: string, userId: string) {
-    const updatedList = await this.listRepository.updateOne(
+    const updatedList = await this.listRepository.findOneAndUpdate(
       { _id: listId, 'contributors.contributor_id': userId },
       {
         $pull: {
-          'contributors.$.contributor_id': userId,
+          contributors: {
+            contributor_id: userId,
+          },
         },
       },
     );
+    if (!updatedList)
+      throw new HttpException(
+        'Contributor does not exsit',
+        HttpStatus.BAD_REQUEST,
+      );
+
     return updatedList;
   }
 }

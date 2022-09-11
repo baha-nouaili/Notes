@@ -16,5 +16,6 @@ export class NoteUpdateValidate implements PipeTransform {
         'You must at least update the title or the content.',
         HttpStatus.BAD_REQUEST,
       );
+    return value;
   }
 }

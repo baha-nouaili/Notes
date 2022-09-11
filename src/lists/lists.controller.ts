@@ -64,6 +64,7 @@ export class ListsController {
     @Param() { noteId }: NoteParamDto,
   ): Promise<string> {
     const userId = this.requestService.getUserId();
+    console.log('here');
     return this.listsService.deleteNote(listId, userId, noteId);
   }
 

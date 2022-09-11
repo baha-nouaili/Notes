@@ -4,7 +4,6 @@ import {
   FilterQuery,
   ProjectionType,
   UpdateQuery,
-  AggregateOptions,
 } from 'mongoose';
 import { DeleteResult } from 'mongodb';
 
@@ -31,6 +30,10 @@ export abstract class ApplicationRepository<T extends Document> {
       .findOne(filterQuery, projection)
       .populate(populate)
       .exec();
+  }
+
+  async findOneAndDelete(filterQuery: FilterQuery<T>) {
+    return this.domainModel.findOneAndDelete(filterQuery);
   }
 
   async create(data: Partial<T>): Promise<T> {
@@ -60,9 +63,5 @@ export abstract class ApplicationRepository<T extends Document> {
 
   async deleteMany(filterQuery: FilterQuery<T>): Promise<DeleteResult> {
     return this.domainModel.deleteMany(filterQuery).exec();
-  }
-
-  async findOneAndDelete(filterQuery: FilterQuery<T>) {
-    return this.domainModel.findOneAndDelete(filterQuery);
   }
 }

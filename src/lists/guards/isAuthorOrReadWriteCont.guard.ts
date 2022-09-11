@@ -15,7 +15,9 @@ export class isAuthorOrReadAndWriteCont implements CanActivate {
     const requestParam = context.switchToHttp().getRequest<Request>()
       .params as ListParam;
     const listId = requestParam.listId;
+
     const userId = this.requestService.getUserId();
+
     return await this.authorizationService.checkIsAuthorOrReadWriteCont(
       listId,
       userId,

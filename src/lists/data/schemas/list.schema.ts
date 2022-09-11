@@ -15,7 +15,6 @@ export class List {
 
   @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }],
-    unique: true,
   })
   notes: Note[];
 }

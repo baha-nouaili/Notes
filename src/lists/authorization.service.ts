@@ -48,7 +48,7 @@ export class AuthorizationService {
   ): Promise<boolean> {
     const isAuthorOrContributor = await this.listRepository.findOne({
       _id: listId,
-      'contributors. contributor_id': userId,
+      'contributors.contributor_id': userId,
     });
     if (!isAuthorOrContributor) throw new UnauthorizedException();
     return true;
