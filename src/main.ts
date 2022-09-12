@@ -12,6 +12,17 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Notes App')
     .setDescription('Description') //TODO
+    .addBearerAuth(
+      {
+        description: `[just text field] Please enter token in following format: Bearer <JWT>`,
+        name: 'Authorization',
+        bearerFormat: 'Bearer', // I`ve tested not to use this field, but the result was the same
+        scheme: 'Bearer',
+        type: 'http', // I`ve attempted type: 'apiKey' too
+        in: 'Header',
+      },
+      'access-token',
+    )
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);

@@ -1,5 +1,6 @@
 import { IsMongoId } from 'class-validator';
 import * as core from 'express-serve-static-core';
+import { ApiParam } from '@nestjs/swagger';
 
 export class ListParamDto {
   @IsMongoId()

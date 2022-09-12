@@ -8,7 +8,7 @@ import { AuthenticationMiddleware } from '../users/middleware/authentication.mid
 import { JWT } from '../shared/Auth/jwt.helper';
 import { RequestService } from '../shared/Auth/request.service';
 import { UsersModule } from '../users/users.module';
-import { AuthorizationService } from './authorization.service';
+import { AuthorizationService } from './services/authorization.service';
 import { Note, NoteSchema } from './data/schemas/note.schema';
 import { NoteRepository } from './data/note.repository';
 

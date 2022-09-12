@@ -23,7 +23,10 @@ import { NoteUpdateValidate } from './pipes/update-note.pipe';
 import { isAuthorOrContributor } from './guards/isAuthorOrContributor.guard';
 import { UserIdParam } from './dto/userIdParam.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 
+@ApiTags('lists')
+@ApiBearerAuth('access-token')
 @Controller('lists')
 export class ListsController {
   constructor(
@@ -31,12 +34,14 @@ export class ListsController {
     private readonly requestService: RequestService,
   ) {}
 
+  @ApiCreatedResponse({ type: List })
   @Post('create-list')
   createNoteList(): Promise<List> {
     const author = this.requestService.getUserId();
     return this.listsService.createNoteList(author);
   }
 
+  @ApiCreatedResponse({ type: List })
   @UseGuards(isAuthorGuard)
   @Post(':listId/invite-user')
   inviteUser(
@@ -47,6 +52,7 @@ export class ListsController {
     return this.listsService.inviteUser(listId, author, inviteContributorDto);
   }
 
+  @ApiCreatedResponse({ type: Note })
   @UseGuards(isAuthorOrReadAndWriteCont)
   @Post(':listId/add-note')
   addNote(
@@ -57,6 +63,7 @@ export class ListsController {
     return this.listsService.createNote(listId, author, createNoteDto);
   }
 
+  @ApiCreatedResponse({ type: String })
   @UseGuards(isAuthorOrReadAndWriteCont)
   @Delete(':listId/:noteId/delete-note')
   deleteNote(
@@ -68,6 +75,7 @@ export class ListsController {
     return this.listsService.deleteNote(listId, userId, noteId);
   }
 
+  @ApiCreatedResponse({ type: Note })
   @UseGuards(isAuthorOrReadAndWriteCont)
   @Put(':listId/:noteId')
   updateNote(
@@ -79,15 +87,17 @@ export class ListsController {
     return this.listsService.updateNote(noteId, listId, author, updateNoteDto);
   }
 
+  @ApiCreatedResponse({ type: Note })
   @UseGuards(isAuthorOrContributor)
   @Get(':listId/notes')
-  getNotes(@Param() { listId }: ListParamDto): Promise<any[] | []> {
+  getNotes(@Param() { listId }: ListParamDto): Promise<Note[] | []> {
     return this.listsService.getNotes(listId);
   }
 
+  @ApiCreatedResponse({ type: List })
   @UseGuards(isAuthorGuard)
   @Put(':listId/update-permission/:userId')
-  updatePermission(
+  updateContributorPermission(
     @Param() { listId }: ListParamDto,
     @Param() { userId }: UserIdParam,
     @Body() updatePermissionDto: UpdatePermissionDto,
@@ -101,12 +111,14 @@ export class ListsController {
     );
   }
 
+  @ApiCreatedResponse({ type: String })
   @UseGuards(isAuthorGuard)
   @Delete(':listId/delete/:userId')
   deleteContributor(
     @Param() { listId }: ListParamDto,
     @Param() { userId }: UserIdParam,
   ) {
-    return this.listsService.deleteContributor(listId, userId);
+    const authorId = this.requestService.getUserId();
+    return this.listsService.deleteContributor(listId, authorId, userId);
   }
 }

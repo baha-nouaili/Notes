@@ -1,7 +1,9 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { Permission } from '../types/permissions.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdatePermissionDto {
+  @ApiProperty()
   @IsNotEmpty()
   @IsEnum(Permission, {
     message:

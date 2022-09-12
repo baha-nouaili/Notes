@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 import { RequestService } from '../../shared/Auth/request.service';
 import { ListParam } from './../dto/listIdParam.dto';
-import { AuthorizationService } from '../authorization.service';
+import { AuthorizationService } from '../services/authorization.service';
 
 @Injectable()
 export class isAuthorOrContributor implements CanActivate {

@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 
-import { ListRepository } from './data/list.repository';
-import { NoteRepository } from './data/note.repository';
-import { Permission } from './types/permissions.enum';
+import { ListRepository } from '../data/list.repository';
+import { NoteRepository } from '../data/note.repository';
+import { Permission } from '../types/permissions.enum';
 @Injectable()
 export class AuthorizationService {
   constructor(

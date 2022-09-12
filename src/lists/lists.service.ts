@@ -170,9 +170,9 @@ export class ListsService {
     return updatedList;
   }
 
-  async deleteContributor(listId: string, userId: string) {
+  async deleteContributor(listId: string, authorId: string, userId: string) {
     const updatedList = await this.listRepository.findOneAndUpdate(
-      { _id: listId, 'contributors.contributor_id': userId },
+      { _id: listId, author: authorId, 'contributors.contributor_id': userId },
       {
         $pull: {
           contributors: {
